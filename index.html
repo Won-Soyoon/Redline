@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedLine - 긴급 지정헌혈 매칭 플랫폼</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="위급한 환자와 지정헌혈자를 빠르게 매칭하는 실시간 지도 기반 플랫폼 프로토타입">
+  <meta name="keywords" content="지정헌혈, 헌혈, 긴급 매칭, 헌혈 지도, 헌혈 의뢰서">
+  
+  <!-- Font & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Lucide Icons (Used for premium modern iconography) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 1. Header & Navigation -->
+    <header class="main-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i data-lucide="droplet" class="pulse-icon"></i>
+        </div>
+        <div class="logo-text">
+          <h1>RedLine</h1>
+          <span>지정헌혈 실시간 매칭 플랫폼</span>
+        </div>
+      </div>
+      
+      <!-- 실시간 대시보드 미니 통계 -->
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-label">매칭 대기중</span>
+          <span class="stat-value text-red" id="header-active-count">5</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">오늘 참여자</span>
+          <span class="stat-value text-blue" id="header-today-donors">24</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">누적 매칭률</span>
+          <span class="stat-value text-green">94.8%</span>
+        </div>
+      </div>
+      
+      <div class="user-profile">
+        <div class="profile-badge">보호자 모드</div>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Grid Layout -->
+    <main class="dashboard-grid">
+      
+      <!-- 2. Left Column: Caregiver Request Form -->
+      <section class="panel-card form-panel">
+        <div class="panel-header">
+          <i data-lucide="plus-circle" class="panel-icon text-red"></i>
+          <div>
+            <h2>긴급 지정헌혈 요청 등록</h2>
+            <p>환자의 수혈 정보를 입력하여 주변 헌혈자에게 요청을 알립니다.</p>
+          </div>
+        </div>
+        
+        <form id="donation-request-form" class="request-form">
+          <div class="form-group">
+            <label for="patient-name">환자명</label>
+            <div class="input-wrapper">
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="patient-name" placeholder="환자 성명 입력" required maxlength="10">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="registry-number">환자 등록번호</label>
+            <div class="input-wrapper">
+              <i data-lucide="credit-card" class="input-icon"></i>
+              <input type="text" id="registry-number" placeholder="예: 240620-123456" required pattern="[0-9]{6}-[0-9]{6,7}" title="생년월일(6자리)-환자고유번호 형태">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="hospital-select">의료기관 (수혈기관)</label>
+            <div class="input-wrapper">
+              <i data-lucide="hospital" class="input-icon"></i>
+              <select id="hospital-select" required>
+                <option value="" disabled selected>수혈 병원 선택</option>
+                <option value="서울대학교병원">서울대학교병원 (종로구)</option>
+                <option value="세브란스병원">세브란스병원 (서대문구)</option>
+                <option value="삼성서울병원">삼성서울병원 (강남구)</option>
+                <option value="서울아산병원">서울아산병원 (송파구)</option>
+                <option value="가톨릭대 서울성모병원">서울성모병원 (서초구)</option>
+                <option value="고려대학교 안암병원">고려대학교 안암병원 (성북구)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group half-width">
+              <label for="blood-type">필요 혈액형</label>
+              <div class="input-wrapper">
+                <i data-lucide="heart" class="input-icon"></i>
+                <select id="blood-type" required>
+                  <option value="" disabled selected>선택</option>
+                  <option value="A">A형</option>
+                  <option value="B">B형</option>
+                  <option value="O">O형</option>
+                  <option value="AB">AB형</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group half-width">
+              <label for="rh-factor">Rh 여부</label>
+              <div class="input-wrapper">
+                <i data-lucide="layers" class="input-icon"></i>
+                <select id="rh-factor" required>
+                  <option value="+">Rh+</option>
+                  <option value="-">Rh-</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="target-donors">필요 헌혈 인원 (명)</label>
+            <div class="input-wrapper">
+              <i data-lucide="users" class="input-icon"></i>
+              <input type="number" id="target-donors" min="1" max="10" value="2" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="urgency-level">긴급도</label>
+            <div class="urgency-selector">
+              <label class="urgency-option low">
+                <input type="radio" name="urgency" value="low">
+                <span>보통</span>
+              </label>
+              <label class="urgency-option medium">
+                <input type="radio" name="urgency" value="medium" checked>
+                <span>긴급</span>
+              </label>
+              <label class="urgency-option high">
+                <input type="radio" name="urgency" value="high">
+                <span>최긴급</span>
+              </label>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn-submit">
+            <span>긴급 매칭 요청 등록</span>
+            <i data-lucide="send"></i>
+          </button>
+        </form>
+      </section>
+      
+      <!-- 3. Right Column - Interactive Map Area -->
+      <section class="panel-card map-panel">
+        <!-- Map Control Bar & Filters -->
+        <div class="map-controls">
+          <div class="map-title-box">
+            <i data-lucide="map-pin" class="text-red"></i>
+            <h2>실시간 지정헌혈 지도</h2>
+            <span class="live-indicator">LIVE</span>
+          </div>
+          
+          <!-- Blood Type Filters -->
+          <div class="blood-filters">
+            <span class="filter-label">혈액형 필터</span>
+            <div class="filter-buttons">
+              <button class="btn-filter active" data-filter="all">전체</button>
+              <button class="btn-filter" data-filter="A">A형</button>
+              <button class="btn-filter" data-filter="B">B형</button>
+              <button class="btn-filter" data-filter="O">O형</button>
+              <button class="btn-filter" data-filter="AB">AB형</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- The Virtual Interactive Map -->
+        <div class="map-container" id="map-viewport">
+          <!-- Grid Background Effect -->
+          <div class="map-grid-layer"></div>
+          
+          <!-- Custom Vector Map (SVG Layout) -->
+          <svg class="map-vector" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+            <!-- Simulated River (Han River) -->
+            <path d="M 0,380 Q 250,340 500,360 T 1000,320" fill="none" stroke="rgba(56, 189, 248, 0.15)" stroke-width="40" stroke-linecap="round" />
+            <path d="M 0,380 Q 250,340 500,360 T 1000,320" fill="none" stroke="rgba(56, 189, 248, 0.2)" stroke-width="8" stroke-linecap="round" />
+            
+            <!-- Simulated Main Road Lines -->
+            <path d="M 150,0 Q 300,300 150,600" fill="none" stroke="rgba(255, 255, 255, 0.03)" stroke-width="12" />
+            <path d="M 500,0 L 500,600" fill="none" stroke="rgba(255, 255, 255, 0.03)" stroke-width="8" />
+            <path d="M 850,0 C 700,200 900,450 780,600" fill="none" stroke="rgba(255, 255, 255, 0.03)" stroke-width="10" />
+            <path d="M 0,220 L 1000,220" fill="none" stroke="rgba(255, 255, 255, 0.03)" stroke-width="14" />
+            <path d="M 0,480 L 1000,480" fill="none" stroke="rgba(255, 255, 255, 0.03)" stroke-width="10" />
+            
+            <!-- District Label Marks -->
+            <text x="300" y="100" fill="rgba(255, 255, 255, 0.1)" font-family="Outfit, Noto Sans KR" font-size="16" letter-spacing="4" font-weight="bold">JONGNO-GU</text>
+            <text x="180" y="480" fill="rgba(255, 255, 255, 0.1)" font-family="Outfit, Noto Sans KR" font-size="16" letter-spacing="4" font-weight="bold">SEOCHO-GU</text>
+            <text x="680" y="450" fill="rgba(255, 255, 255, 0.1)" font-family="Outfit, Noto Sans KR" font-size="16" letter-spacing="4" font-weight="bold">GANGNAM-GU</text>
+            <text x="750" y="260" fill="rgba(255, 255, 255, 0.1)" font-family="Outfit, Noto Sans KR" font-size="16" letter-spacing="4" font-weight="bold">SONGPA-GU</text>
+            <text x="450" y="320" fill="rgba(56, 189, 248, 0.2)" font-family="Outfit, Noto Sans KR" font-size="14" letter-spacing="2">HAN RIVER</text>
+          </svg>
+          
+          <!-- Dynamic Marker Overlays -->
+          <div class="map-markers-overlay" id="map-markers-container">
+            <!-- Markers will be injected dynamically via JS -->
+          </div>
+          
+          <!-- Empty State Overlay for Map filters -->
+          <div class="map-empty-state" id="map-empty-msg">
+            <i data-lucide="search-code"></i>
+            <p>해당 혈액형의 긴급 요청이 없습니다.</p>
+          </div>
+          
+          <!-- Interactive Detail Card Popup (Slide up from bottom of map) -->
+          <div class="map-detail-card" id="detail-card">
+            <button class="close-detail-btn" id="close-detail-btn">
+              <i data-lucide="x"></i>
+            </button>
+            <div class="detail-badge" id="detail-urgency">긴급</div>
+            
+            <div class="detail-main">
+              <div class="detail-blood-badge" id="detail-blood">A+</div>
+              <div class="detail-info">
+                <h3 id="detail-hospital">서울대학교병원</h3>
+                <div class="detail-meta">
+                  <span>환자명: <strong id="detail-patient">김수철</strong></span>
+                  <span class="separator">|</span>
+                  <span>등록번호: <span id="detail-reg">260620-1******</span></span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="detail-progress-section">
+              <div class="progress-info-row">
+                <span class="progress-label">지정헌혈 매칭 현황</span>
+                <span class="progress-ratio" id="detail-progress-ratio">1명 참여 중 / 3명 필요</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="detail-progress-bar" style="width: 33%"></div>
+              </div>
+            </div>
+            
+            <div class="detail-actions">
+              <button class="btn-action-primary" id="btn-donate-submit">
+                <i data-lucide="heart-handshake"></i>
+                <span>이 환자에게 헌혈하러 가기</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- 4. Lower Dashboard & Receipt Issuance Area -->
+      <section class="panel-card dashboard-panel full-width">
+        <div class="panel-header">
+          <i data-lucide="activity" class="panel-icon text-blue"></i>
+          <div>
+            <h2>헌혈 참여 대시보드 및 의뢰서 발급</h2>
+            <p>참여 의사를 밝힌 헌혈 요청에 대한 진행률을 확인하고 지정헌혈 모바일 의뢰서를 발급받으세요.</p>
+          </div>
+        </div>
+        
+        <div class="dashboard-content">
+          <!-- Left Part: Match Statistics & Active donation tracker -->
+          <div class="active-tracker-box">
+            <h3>현재 참여중인 긴급 헌혈 매칭</h3>
+            
+            <div class="tracker-card" id="active-tracker-card">
+              <div class="tracker-empty" id="tracker-empty-state">
+                <i data-lucide="heart-pulse" class="empty-icon"></i>
+                <p>지도에서 요청 마커를 선택하고<br><strong>'헌혈하러 가기'</strong>를 클릭하여 동참해 주세요.</p>
+              </div>
+              
+              <div class="tracker-active-content hidden" id="tracker-active-content">
+                <div class="tracker-header">
+                  <span class="hospital-name" id="tracker-hospital">삼성서울병원</span>
+                  <span class="badge-blood" id="tracker-blood">O+</span>
+                </div>
+                <p class="tracker-patient-info">수혜자(환자): <strong id="tracker-patient">이영희</strong> (등록번호: <span id="tracker-reg">260514-2******</span>)</p>
+                
+                <div class="tracker-status-box">
+                  <div class="status-stat">
+                    <span class="num-highlight" id="tracker-count-matched">1</span>
+                    <span class="label">참여 완료</span>
+                  </div>
+                  <div class="status-divider"></div>
+                  <div class="status-stat">
+                    <span class="num-highlight text-red" id="tracker-count-needed">2</span>
+                    <span class="label">추가 필요</span>
+                  </div>
+                  <div class="status-divider"></div>
+                  <div class="status-stat">
+                    <span class="num-highlight text-yellow" id="tracker-matching-pct">33%</span>
+                    <span class="label">매칭 달성도</span>
+                  </div>
+                </div>
+                
+                <div class="tracker-progress">
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill animated-stripes" id="tracker-progress-bar" style="width: 33%"></div>
+                  </div>
+                </div>
+                
+                <div class="tracker-footer">
+                  <p><i data-lucide="info" class="inline-icon"></i> 헌혈의 집을 방문하여 아래 발급된 모바일 지정헌혈 의뢰서를 간호사에게 제시해 주세요.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right Part: Mobile Designated Donation Receipt (의뢰서) -->
+          <div class="receipt-issuance-box">
+            <h3>모바일 지정헌혈 의뢰서</h3>
+            
+            <div class="receipt-container">
+              <!-- Receipt Watermark/Background -->
+              <div class="receipt-wrapper receipt-unissued" id="receipt-widget">
+                
+                <!-- Unissued State placeholder -->
+                <div class="receipt-placeholder" id="receipt-placeholder-text">
+                  <div class="dashed-circle">
+                    <i data-lucide="lock" class="lock-icon"></i>
+                  </div>
+                  <p>헌혈 참여 시 의뢰서가 자동으로 발급됩니다.</p>
+                </div>
+                
+                <!-- Actual Receipt Content -->
+                <div class="receipt-content hidden" id="receipt-real-content">
+                  <!-- Header border effect -->
+                  <div class="receipt-header">
+                    <div class="receipt-title">모바일 지정헌혈 의뢰서</div>
+                    <div class="receipt-subtitle">MOBILE BLOOD DONATION REFERRAL</div>
+                    <div class="receipt-badge-status">VALID</div>
+                  </div>
+                  
+                  <div class="receipt-body">
+                    <!-- Security Code -->
+                    <div class="receipt-row-code">
+                      <span>발급 번호</span>
+                      <span class="receipt-code-value" id="receipt-serial-no">RL-20260620-891</span>
+                    </div>
+                    
+                    <div class="receipt-divider-dash"></div>
+                    
+                    <!-- Main Fields -->
+                    <div class="receipt-field">
+                      <span class="field-label">수혈 의료기관</span>
+                      <span class="field-value" id="receipt-hospital-val">서울대학교병원</span>
+                    </div>
+                    <div class="receipt-field">
+                      <span class="field-label">환자명 (수혜자)</span>
+                      <span class="field-value" id="receipt-patient-val">김수철</span>
+                    </div>
+                    <div class="receipt-field">
+                      <span class="field-label">환자 등록번호</span>
+                      <span class="field-value font-mono" id="receipt-reg-val">260620-132452</span>
+                    </div>
+                    <div class="receipt-field">
+                      <span class="field-label">필요 혈액형</span>
+                      <span class="field-value text-red font-bold" id="receipt-blood-val">A+형 (지정수혈)</span>
+                    </div>
+                    <div class="receipt-field">
+                      <span class="field-label">수혈용 의뢰제제</span>
+                      <span class="field-value">RBC (적혈구제제) / Platelet (성분채혈혈소판)</span>
+                    </div>
+                    <div class="receipt-field">
+                      <span class="field-label">발급 일시</span>
+                      <span class="field-value" id="receipt-date-val">2026-06-20 23:05</span>
+                    </div>
+                    
+                    <div class="receipt-divider-dash"></div>
+                    
+                    <!-- Barcode section -->
+                    <div class="receipt-barcode-section">
+                      <div class="barcode-graphic">
+                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                      </div>
+                      <span class="barcode-number" id="receipt-barcode-num">*RL-98234-DONOR*</span>
+                    </div>
+                    
+                    <!-- Stamp simulation -->
+                    <div class="receipt-stamp" id="receipt-stamp-img">
+                      <div class="stamp-inner">
+                        <span>지정헌혈</span>
+                        <span>매칭확인</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Tear border details -->
+                  <div class="receipt-footer">
+                    <p>본 의뢰서는 적십자사 지정헌혈 규정에 따라 전산 등록을 필한 매칭 발급서입니다. 헌혈의 집 접수 시 제시해 주십시오.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Receipt Actions -->
+              <div class="receipt-actions hidden" id="receipt-actions-panel">
+                <button class="btn-secondary" id="btn-copy-referral">
+                  <i data-lucide="copy"></i>
+                  <span>정보 클립보드 복사</span>
+                </button>
+                <button class="btn-secondary" id="btn-print-referral">
+                  <i data-lucide="printer"></i>
+                  <span>의뢰서 인쇄하기</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+
+    <!-- Global Toast Alerts -->
+    <div class="toast-container" id="toast-container"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
